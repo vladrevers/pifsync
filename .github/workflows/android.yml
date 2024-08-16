@@ -1,0 +1,46 @@
+name: Json
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"  # Run the workflow every 30 minutes
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Grant execute permissions
+        run: chmod +x generate.sh update_check.sh
+
+      - name: Check if APK update is needed
+        run: ./update_check.sh
+        id: check_apk
+
+      - name: Install aapt
+        if: steps.check_apk.outputs.new_apk == 'true'
+        run: sudo apt-get install -y aapt
+
+      - name: Generate JSON file
+        if: steps.check_apk.outputs.new_apk == 'true'
+        run: ./generate.sh "$(cat new_apk_url.txt)"
+
+      - name: Check differences and commit changes
+        if: steps.check_apk.outputs.new_apk == 'true'
+        run: |
+          git config --global user.name "Vladyslav"
+          git config --global user.email "56305121+vladrevers@users.noreply.github.com"
+
+          if git diff --exit-code pif.json last_use_apk_url.txt; then
+            echo "No changes detected in pif.json or last_use_apk_url.txt. No commit needed."
+          else
+            mv new_apk_url.txt last_use_apk_url.txt
+            git add pif.json last_use_apk_url.txt
+            git commit -m "Update pif.json and last_use_apk_url.txt"
+            git push
+          fi
