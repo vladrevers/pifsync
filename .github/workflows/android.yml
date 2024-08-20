@@ -2,7 +2,7 @@ name: Json
 
 on:
   schedule:
-    - cron: "*/30 * * * *"  # Run the workflow every 30 minutes
+    - cron: "*/5 * * * *"  # Run the workflow every 30 minutes
   push:
     branches:
       - main
