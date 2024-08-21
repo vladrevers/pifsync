@@ -2,10 +2,8 @@ name: Json
 
 on:
   schedule:
-    - cron: "*/5 * * * *"  # Run the workflow every 30 minutes
-  push:
-    branches:
-      - main
+    - cron: '*/5 * * * *'  # Run the workflow every 5 minutes
+  workflow_dispatch:
 
 jobs:
   build:
@@ -22,16 +20,26 @@ jobs:
         run: ./update_check.sh
         id: check_apk
 
+      - name: "Manual run: ensure new_apk_url.txt exists"
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [ ! -f "new_apk_url.txt" ]; then
+            cp last_use_apk_url.txt new_apk_url.txt
+            echo "Copied last_use_apk_url.txt to new_apk_url.txt"
+          else
+            echo "new_apk_url.txt already exists."
+          fi
+
       - name: Install aapt
-        if: steps.check_apk.outputs.new_apk == 'true'
+        if: steps.check_apk.outputs.new_apk == 'true' || github.event_name == 'workflow_dispatch'
         run: sudo apt-get install -y aapt
 
       - name: Generate JSON file
-        if: steps.check_apk.outputs.new_apk == 'true'
+        if: steps.check_apk.outputs.new_apk == 'true' || github.event_name == 'workflow_dispatch'
         run: ./generate.sh "$(cat new_apk_url.txt)"
 
       - name: Check differences and commit changes
-        if: steps.check_apk.outputs.new_apk == 'true'
+        if: steps.check_apk.outputs.new_apk == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           git config --global user.name "Vladyslav"
           git config --global user.email "56305121+vladrevers@users.noreply.github.com"
