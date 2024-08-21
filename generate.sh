@@ -1,5 +1,11 @@
 #!/bin/bash
-apk_url="$1"  # Get APK URL from the argument
+
+# Get APK URL from the argument and ensure it is provided
+apk_url="$1"
+if [[ -z "${apk_url}" ]]; then
+  echo "Error: APK URL parameter is missing."
+  exit 1
+fi
 
 get_value() {
     echo "$aapt_output" | grep -A2 "name=\"$1\"" | grep "value=" | sed 's/.*value="\([^"]*\)".*/\1/' | head -n1
@@ -35,8 +41,15 @@ service_file="pif.json"
 
 trap 'rm -rf "${tmp_dir}"' EXIT
 
-# Download the APK file
-curl --silent --show-error --location --output "${apk_file}" "${apk_url}"
+# Try to download the APK file $max_attempts times with a 10-second delay between attempts
+max_attempts=3
+for i in $(seq 1 "$max_attempts"); do
+  curl --silent --show-error --location --output "${apk_file}" "${apk_url}" && break || [[ $i -lt $max_attempts ]] && sleep 10
+done
+if [[ ! -s "${apk_file}" ]]; then
+  echo "Failed to download APK after ${max_attempts} attempts."
+  exit 1
+fi
 
 # Use aapt to dump the XML tree
 aapt_output=$(aapt dump xmltree "${apk_file}" "res/xml/inject_fields.xml")
