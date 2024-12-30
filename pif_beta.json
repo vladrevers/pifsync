@@ -1,0 +1,11 @@
+{
+  "BRAND": "google",
+  "DEVICE": "caiman",
+  "FINGERPRINT": "google/caiman_beta/caiman:Baklava/BP21.241121.009/12787338:user/release-keys",
+  "ID": "BP21.241121.009",
+  "MANUFACTURER": "Google",
+  "MODEL": "Pixel 9 Pro",
+  "PRODUCT": "caiman_beta",
+  "DEVICE_INITIAL_SDK_INT": "32",
+  "SECURITY_PATCH": "2024-12-05"
+}
