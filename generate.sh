@@ -1,5 +1,5 @@
 #!/bin/bash
-# Based on solution by daboynb
+# Based on autojson solution by daboynb
 
 # Get APK URL from the argument and ensure it is provided
 apk_url="$1"
