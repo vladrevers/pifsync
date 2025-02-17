@@ -12,10 +12,20 @@ jobs:
       actions: write
       contents: read
     steps:
-      - name: Delete workflow runs
+      - name: Delete workflow runs (scheduled)
+        if: ${{ github.event_name == 'schedule' }}
         uses: Mattraks/delete-workflow-runs@v2
         with:
           token: ${{ github.token }}
           repository: ${{ github.repository }}
           retain_days: 1
           keep_minimum_runs: 6
+    steps:
+      - name: Delete workflow runs (manual)
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 0
+          keep_minimum_runs: 0
