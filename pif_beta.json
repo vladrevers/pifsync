@@ -1,11 +1,11 @@
 {
   "BRAND": "google",
-  "DEVICE": "tokay",
-  "FINGERPRINT": "google/tokay_beta/tokay:16/BP22.250221.010/13193326:user/release-keys",
-  "ID": "BP22.250221.010",
+  "DEVICE": "tangorpro",
+  "FINGERPRINT": "google/tangorpro_beta/tangorpro:16/BP22.250221.013/13218340:user/release-keys",
+  "ID": "BP22.250221.013",
   "MANUFACTURER": "Google",
-  "MODEL": "Pixel 9",
-  "PRODUCT": "tokay_beta",
+  "MODEL": "Pixel Tablet",
+  "PRODUCT": "tangorpro_beta",
   "DEVICE_INITIAL_SDK_INT": "32",
   "SECURITY_PATCH": "2025-03-05"
 }
