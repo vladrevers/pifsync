@@ -1,11 +1,11 @@
 {
   "BRAND": "google",
-  "DEVICE": "tegu",
-  "FINGERPRINT": "google/tegu_beta/tegu:16/BP31.250502.008.A1/13572937:user/release-keys",
+  "DEVICE": "raven",
+  "FINGERPRINT": "google/raven_beta/raven:16/BP31.250502.008.A1/13572937:user/release-keys",
   "ID": "BP31.250502.008.A1",
   "MANUFACTURER": "Google",
-  "MODEL": "Pixel 9a",
-  "PRODUCT": "tegu_beta",
+  "MODEL": "Pixel 6 Pro",
+  "PRODUCT": "raven_beta",
   "DEVICE_INITIAL_SDK_INT": "32",
   "SECURITY_PATCH": "2025-05-05"
 }
