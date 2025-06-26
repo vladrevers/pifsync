@@ -14,7 +14,7 @@ PRODUCT_LIST="$(grep -o 'ota/.*_beta' PIXEL_OTA_HTML | cut -d\/ -f2)"
 OTA_LIST="$(grep 'ota/.*_beta' PIXEL_OTA_HTML | cut -d\" -f2)"
 
 SEED=$(date -d "$BETA_REL_DATE" '+%s')
-RANDOM=$SEED + 3
+RANDOM=$SEED + 4
 
 list_count="$(echo "$MODEL_LIST" | wc -l)"
 list_rand="$((RANDOM % $list_count + 1))"
