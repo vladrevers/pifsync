@@ -1,11 +1,11 @@
 {
   "BRAND": "google",
-  "DEVICE": "panther",
-  "FINGERPRINT": "google/panther_beta/panther:16/BP31.250502.008.A1/13572937:user/release-keys",
-  "ID": "BP31.250502.008.A1",
+  "DEVICE": "tegu",
+  "FINGERPRINT": "google/tegu_beta/tegu:16/BP31.250523.010/13667654:user/release-keys",
+  "ID": "BP31.250523.010",
   "MANUFACTURER": "Google",
-  "MODEL": "Pixel 7",
-  "PRODUCT": "panther_beta",
+  "MODEL": "Pixel 9a",
+  "PRODUCT": "tegu_beta",
   "DEVICE_INITIAL_SDK_INT": "32",
-  "SECURITY_PATCH": "2025-05-05"
+  "SECURITY_PATCH": "2025-06-05"
 }
