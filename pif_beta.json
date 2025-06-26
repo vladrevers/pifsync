@@ -1,11 +1,11 @@
 {
   "BRAND": "google",
-  "DEVICE": "tegu",
-  "FINGERPRINT": "google/tegu_beta/tegu:16/BP31.250523.010/13667654:user/release-keys",
+  "DEVICE": "felix",
+  "FINGERPRINT": "google/felix_beta/felix:16/BP31.250523.010/13667654:user/release-keys",
   "ID": "BP31.250523.010",
   "MANUFACTURER": "Google",
-  "MODEL": "Pixel 9a",
-  "PRODUCT": "tegu_beta",
+  "MODEL": "Pixel Fold",
+  "PRODUCT": "felix_beta",
   "DEVICE_INITIAL_SDK_INT": "32",
   "SECURITY_PATCH": "2025-06-05"
 }
