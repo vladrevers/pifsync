@@ -38,7 +38,9 @@ jobs:
 
       - name: Generate JSON file
         if: steps.check_apk.outputs.new_apk == 'true' || github.event_name == 'workflow_dispatch'
-        run: ./generate.sh "$(cat new_apk_url.txt)"
+        run: |
+          ./generate.sh "$(cat new_apk_url.txt)"
+          mv new_apk_url.txt last_use_apk_url.txt
 
       - name: Check differences and commit changes
         if: steps.check_apk.outputs.new_apk == 'true' || github.event_name == 'workflow_dispatch'
@@ -49,7 +51,6 @@ jobs:
           if git diff --exit-code pif.json last_use_apk_url.txt; then
             echo "No changes detected in pif.json or last_use_apk_url.txt. No commit needed."
           else
-            mv new_apk_url.txt last_use_apk_url.txt
             git add pif.json last_use_apk_url.txt
             git commit -m "Update pif.json and last_use_apk_url.txt"
             git push
