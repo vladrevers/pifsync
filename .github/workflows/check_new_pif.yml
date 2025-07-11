@@ -32,7 +32,9 @@ jobs:
 
       - name: Install aapt
         if: steps.check_apk.outputs.new_apk == 'true' || github.event_name == 'workflow_dispatch'
-        run: sudo apt-get install -y aapt
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y aapt
 
       - name: Generate JSON file
         if: steps.check_apk.outputs.new_apk == 'true' || github.event_name == 'workflow_dispatch'
