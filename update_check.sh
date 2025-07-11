@@ -25,7 +25,7 @@ elif [[ -f "${last_link_file}" && "$(cat ${last_link_file})" == "${lastLink}" ]]
   exit 0
 else
   echo "PrevLink: $(cat ${last_link_file})"
-  exho "LastLink: ${lastLink}"
+  echo "LastLink: ${lastLink}"
   echo "${lastLink}" > "${apk_url_file}"
   echo "New APK detected. Continuing."
   echo "new_apk=true" >> $GITHUB_OUTPUT
