@@ -1,11 +1,11 @@
 {
   "BRAND": "google",
-  "DEVICE": "akita",
-  "FINGERPRINT": "google/akita_beta/akita:16/BP31.250610.004/13769805:user/release-keys",
-  "ID": "BP31.250610.004",
+  "DEVICE": "cheetah",
+  "FINGERPRINT": "google/cheetah_beta/cheetah:16/BP31.250610.009/13905196:user/release-keys",
+  "ID": "BP31.250610.009",
   "MANUFACTURER": "Google",
-  "MODEL": "Pixel 8a",
-  "PRODUCT": "akita_beta",
-  "DEVICE_INITIAL_SDK_INT": "25",
+  "MODEL": "Pixel 7 Pro",
+  "PRODUCT": "cheetah_beta",
+  "DEVICE_INITIAL_SDK_INT": "32",
   "SECURITY_PATCH": "2025-07-05"
 }
