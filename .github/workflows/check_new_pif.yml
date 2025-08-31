@@ -19,7 +19,7 @@ jobs:
       - name: Generate JSON file
         run: |
           ./generate_json.sh
-          [-f ./pif_beta.json] && cp -f ./pif_beta.json ./pif.json
+          cp -f ./pif_beta.json ./pif.json
 
       - name: Commit if changed
         run: |
