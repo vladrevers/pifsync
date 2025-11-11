@@ -1,11 +1,11 @@
 {
   "BRAND": "google",
-  "DEVICE": "cheetah",
-  "FINGERPRINT": "google/cheetah_beta/cheetah:16/BP31.250610.009/13905196:user/release-keys",
-  "ID": "BP31.250610.009",
+  "DEVICE": "rango",
+  "FINGERPRINT": "google/rango_beta/rango:16/BP41.250916.012.A1/14330953:user/release-keys",
+  "ID": "BP41.250916.012.A1",
   "MANUFACTURER": "Google",
-  "MODEL": "Pixel 7 Pro",
-  "PRODUCT": "cheetah_beta",
+  "MODEL": "Pixel 10 Pro Fold",
+  "PRODUCT": "rango_beta",
   "DEVICE_INITIAL_SDK_INT": "32",
-  "SECURITY_PATCH": "2025-07-05"
+  "SECURITY_PATCH": "2025-10-05"
 }
