@@ -29,12 +29,13 @@ DEVICE="$(echo "$PRODUCT" | sed 's/_beta//')"
 
 echo "Selected device: $MODEL ($PRODUCT)"
 
-(ulimit -f 2; wget -q -O PIXEL_ZIP_METADATA $OTA) 2>/dev/null
-FINGERPRINT="$(grep -am1 'post-build=' PIXEL_ZIP_METADATA 2>/dev/null | cut -d= -f2)"
-SECURITY_PATCH="$(grep -am1 'security-patch-level=' PIXEL_ZIP_METADATA 2>/dev/null | cut -d= -f2)"
+curl -s -L --range 0-32768 "$OTA" -o PIXEL_ZIP_METADATA
+FINGERPRINT="$(grep -am1 'post-build=' PIXEL_ZIP_METADATA | cut -d= -f2)"
+SECURITY_PATCH="$(grep -am1 'security-patch-level=' PIXEL_ZIP_METADATA | cut -d= -f2)"
 
 if [ -z "$FINGERPRINT" -o -z "$SECURITY_PATCH" ]; then
     echo "Error: failed to get device metadata"
+    rm -f PIXEL_*_HTML PIXEL_ZIP_METADATA
     exit 1
 fi
 
