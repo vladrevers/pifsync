@@ -3,8 +3,8 @@
 
 echo "Loading latest beta info..."
 wget -q -O PIXEL_VERSIONS_HTML https://developer.android.com/about/versions
-wget -q -O PIXEL_LATEST_HTML $(grep -m1 'developer.android.com/about/versions/' PIXEL_VERSIONS_HTML | cut -d\" -f2)
-wget -q -O PIXEL_OTA_HTML https://developer.android.com$(grep -om1 'href=".*download-ota"' PIXEL_LATEST_HTML | cut -d\" -f2)
+wget -q -O PIXEL_LATEST_HTML $(grep -o 'https://developer.android.com/about/versions/.*[0-9]"' PIXEL_VERSIONS_HTML | sort -ru | cut -d\" -f1 | head -n1)
+wget -q -O PIXEL_OTA_HTML https://developer.android.com$(grep -o 'href=".*download-ota.*"' PIXEL_LATEST_HTML | grep 'qpr' | cut -d\" -f2 | head -n1)
 
 BETA_REL_DATE="$(date -d "$(grep -m1 -A1 'Release date' PIXEL_OTA_HTML | tail -n1 | sed 's;.*<td>\(.*\)</td>.*;\1;')" '+%Y-%m-%d')"
 echo "Release date: $BETA_REL_DATE"
@@ -29,9 +29,9 @@ DEVICE="$(echo "$PRODUCT" | sed 's/_beta//')"
 
 echo "Selected device: $MODEL ($PRODUCT)"
 
-(ulimit -f 3; wget -q -O PIXEL_ZIP_METADATA $OTA) 2>/dev/null
-FINGERPRINT="$(grep -am1 'post-build=' PIXEL_ZIP_METADATA | cut -d= -f2)"
-SECURITY_PATCH="$(grep -am1 'security-patch-level=' PIXEL_ZIP_METADATA | cut -d= -f2)"
+(ulimit -f 2; wget -q -O PIXEL_ZIP_METADATA $OTA) 2>/dev/null
+FINGERPRINT="$(grep -am1 'post-build=' PIXEL_ZIP_METADATA 2>/dev/null | cut -d= -f2)"
+SECURITY_PATCH="$(grep -am1 'security-patch-level=' PIXEL_ZIP_METADATA 2>/dev/null | cut -d= -f2)"
 
 if [ -z "$FINGERPRINT" -o -z "$SECURITY_PATCH" ]; then
     echo "Error: failed to get device metadata"
