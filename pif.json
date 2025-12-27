@@ -1,11 +1,11 @@
 {
   "BRAND": "google",
-  "DEVICE": "oriole",
-  "FINGERPRINT": "google/oriole_beta/oriole:16/CP11.251114.007/14621658:user/release-keys",
+  "DEVICE": "cheetah",
+  "FINGERPRINT": "google/cheetah_beta/cheetah:16/CP11.251114.007/14621658:user/release-keys",
   "ID": "CP11.251114.007",
   "MANUFACTURER": "Google",
-  "MODEL": "Pixel 6 ",
-  "PRODUCT": "oriole_beta",
+  "MODEL": "Pixel 7",
+  "PRODUCT": "cheetah_beta",
   "DEVICE_INITIAL_SDK_INT": "32",
   "SECURITY_PATCH": "2025-12-05"
 }
