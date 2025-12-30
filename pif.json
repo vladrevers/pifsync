@@ -1,11 +1,11 @@
 {
   "BRAND": "google",
-  "DEVICE": "tokay",
-  "FINGERPRINT": "google/tokay_beta/tokay:16/CP11.251114.007/14621658:user/release-keys",
+  "DEVICE": "komodo",
+  "FINGERPRINT": "google/komodo_beta/komodo:16/CP11.251114.007/14621658:user/release-keys",
   "ID": "CP11.251114.007",
   "MANUFACTURER": "Google",
-  "MODEL": "Pixel 8a",
-  "PRODUCT": "tokay_beta",
+  "MODEL": "Pixel 9 Pro",
+  "PRODUCT": "komodo_beta",
   "DEVICE_INITIAL_SDK_INT": "32",
   "SECURITY_PATCH": "2025-12-05"
 }
