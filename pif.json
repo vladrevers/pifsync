@@ -1,11 +1,11 @@
 {
   "BRAND": "google",
-  "DEVICE": "raven",
-  "FINGERPRINT": "google/raven_beta/raven:16/CP11.251114.007/14621658:user/release-keys",
+  "DEVICE": "panther",
+  "FINGERPRINT": "google/panther_beta/panther:16/CP11.251114.007/14621658:user/release-keys",
   "ID": "CP11.251114.007",
   "MANUFACTURER": "Google",
-  "MODEL": "Pixel 6 Pro",
-  "PRODUCT": "raven_beta",
+  "MODEL": "Pixel 6a",
+  "PRODUCT": "panther_beta",
   "DEVICE_INITIAL_SDK_INT": "32",
   "SECURITY_PATCH": "2025-12-05"
 }
