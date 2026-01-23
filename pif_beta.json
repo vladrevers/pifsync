@@ -1,11 +1,11 @@
 {
   "BRAND": "google",
-  "DEVICE": "tangorpro",
-  "FINGERPRINT": "google/tangorpro_beta/tangorpro:16/CP11.251209.007.A1/14691868:user/release-keys",
+  "DEVICE": "lynx",
+  "FINGERPRINT": "google/lynx_beta/lynx:16/CP11.251209.007.A1/14691868:user/release-keys",
   "ID": "CP11.251209.007.A1",
   "MANUFACTURER": "Google",
-  "MODEL": "Pixel Fold",
-  "PRODUCT": "tangorpro_beta",
+  "MODEL": "Pixel 7 Pro",
+  "PRODUCT": "lynx_beta",
   "DEVICE_INITIAL_SDK_INT": "32",
   "SECURITY_PATCH": "2026-01-05"
 }
