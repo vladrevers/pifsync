@@ -1,51 +1,83 @@
 #!/bin/bash
-# Based on autopif2 solution by osm0sis
+# Based on autopif4 by osm0sis @ xda-developers
 
-echo "Loading latest beta info..."
-wget -q -O PIXEL_VERSIONS_HTML https://developer.android.com/about/versions
-wget -q -O PIXEL_LATEST_HTML $(grep -o 'https://developer.android.com/about/versions/.*[0-9]"' PIXEL_VERSIONS_HTML | sort -ru | cut -d\" -f1 | head -n1)
-wget -q -O PIXEL_OTA_HTML https://developer.android.com$(grep -o 'href=".*download-ota.*"' PIXEL_LATEST_HTML | grep 'qpr' | cut -d\" -f2 | head -n1)
+set -euo pipefail
 
-BETA_REL_DATE="$(date -d "$(grep -m1 -A1 'Release date' PIXEL_OTA_HTML | tail -n1 | sed 's;.*<td>\(.*\)</td>.*;\1;')" '+%Y-%m-%d')"
-echo "Release date: $BETA_REL_DATE"
+PREFERRED_DEVICE="tegu"
 
-MODEL_LIST="$(grep -A1 'tr id=' PIXEL_OTA_HTML | grep 'td' | sed 's;.*<td>\(.*\)</td>;\1;')"
-PRODUCT_LIST="$(grep -o 'ota/.*_beta' PIXEL_OTA_HTML | cut -d\/ -f2)"
-OTA_LIST="$(grep 'ota/.*_beta' PIXEL_OTA_HTML | cut -d\" -f2)"
+TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP"' EXIT
 
-SEED=$(date -d "$BETA_REL_DATE" '+%s')
-RANDOM=$SEED
+die() { echo "Error: $*"; exit 1; }
 
-list_count="$(echo "$MODEL_LIST" | wc -l)"
-list_rand="$((RANDOM % $list_count + 1))"
-IFS=$'\n'
-set -- $MODEL_LIST
-MODEL="$(eval echo \${$list_rand})"
-set -- $PRODUCT_LIST
-PRODUCT="$(eval echo \${$list_rand})"
-set -- $OTA_LIST
-OTA="$(eval echo \${$list_rand})"
-DEVICE="$(echo "$PRODUCT" | sed 's/_beta//')"
+echo "==> Crawling Android Developers for latest Pixel Beta device list ..."
+wget -q -O "$TMP/versions.html" "https://developer.android.com/about/versions"
+wget -q -O "$TMP/latest.html" "$(grep -o 'https://developer.android.com/about/versions/.*[0-9]"' "$TMP/versions.html" | sort -ru | cut -d\" -f1 | head -n1)"
+wget -q -O "$TMP/fi.html" "https://developer.android.com$(grep -o 'href=".*download.*"' "$TMP/latest.html" | grep 'qpr' | cut -d\" -f2 | head -n1)"
 
-echo "Selected device: $MODEL ($PRODUCT)"
+MODEL_LIST="$(grep -A1 'tr id=' "$TMP/fi.html" | grep 'td' | sed 's;.*<td>\(.*\)</td>.*;\1;')"
+PRODUCT_LIST="$(grep 'tr id=' "$TMP/fi.html" | sed 's;.*<tr id="\(.*\)">.*;\1_beta;')"
 
-curl -s -L --range 0-32768 "$OTA" -o PIXEL_ZIP_METADATA
-FINGERPRINT="$(grep -am1 'post-build=' PIXEL_ZIP_METADATA | cut -d= -f2)"
-SECURITY_PATCH="$(grep -am1 'security-patch-level=' PIXEL_ZIP_METADATA | cut -d= -f2)"
+[ -z "$MODEL_LIST" ] && die "Failed to get device list"
 
-if [ -z "$FINGERPRINT" -o -z "$SECURITY_PATCH" ]; then
-    echo "Error: failed to get device metadata"
-    rm -f PIXEL_*_HTML PIXEL_ZIP_METADATA
-    exit 1
+echo "Available devices:"
+paste <(echo "$MODEL_LIST") <(echo "$PRODUCT_LIST")
+
+# Select preferred device or fall back to first
+PRODUCT="" MODEL=""
+i=1
+while IFS= read -r prod; do
+  dev="$(echo "$prod" | sed 's/_beta//')"
+  if [ "$dev" = "$PREFERRED_DEVICE" ]; then
+    MODEL="$(echo "$MODEL_LIST" | sed -n "${i}p")"
+    PRODUCT="$prod"
+    break
+  fi
+  i=$((i + 1))
+done <<< "$PRODUCT_LIST"
+
+if [ -z "$PRODUCT" ]; then
+  echo "Warning: $PREFERRED_DEVICE not found, using first device"
+  MODEL="$(echo "$MODEL_LIST" | head -n1)"
+  PRODUCT="$(echo "$PRODUCT_LIST" | head -n1)"
 fi
 
-echo "Creating pif_beta.json..."
+DEVICE="$(echo "$PRODUCT" | sed 's/_beta//')"
+echo "==> Selected: $MODEL ($PRODUCT)"
+
+echo "==> Crawling Android Flash Tool for latest Pixel Canary build info ..."
+wget -q -O "$TMP/flash.html" "https://flash.android.com/"
+API_KEY="$(grep -o '<body data-client-config=.*' "$TMP/flash.html" | cut -d\; -f2 | cut -d\& -f1)"
+wget -q -O "$TMP/station.json" --header="Referer: https://flash.android.com" \
+  "https://content-flashstation-pa.googleapis.com/v1/builds?product=$PRODUCT&key=$API_KEY"
+
+tac "$TMP/station.json" | grep -m1 -A13 '"canary": true' > "$TMP/canary.json"
+ID="$(grep 'releaseCandidateName' "$TMP/canary.json" | cut -d\" -f4)"
+INCREMENTAL="$(grep 'buildId' "$TMP/canary.json" | cut -d\" -f4)"
+[ -z "$ID" ] || [ -z "$INCREMENTAL" ] && die "Failed to extract build info from JSON"
+echo "Build: $ID / $INCREMENTAL"
+
+echo "==> Crawling Pixel Update Bulletins for security patch level ..."
+CANARY_ID="$(grep '"id"' "$TMP/canary.json" | sed -e 's;.*canary-\(.*\)".*;\1;' -e 's;^\(.\{4\}\);\1-;')"
+[ -z "$CANARY_ID" ] && die "Failed to extract canary id"
+
+wget -q -O "$TMP/secbull.html" "https://source.android.com/docs/security/bulletin/pixel"
+SECURITY_PATCH="$(grep "<td>$CANARY_ID" "$TMP/secbull.html" | sed 's;.*<td>\(.*\)</td>;\1;')"
+if [ -z "$SECURITY_PATCH" ]; then
+  echo "Warning: exact patch not found, assuming ${CANARY_ID}-05"
+  SECURITY_PATCH="${CANARY_ID}-05"
+fi
+echo "Security patch: $SECURITY_PATCH"
+
+FINGERPRINT="google/$PRODUCT/$DEVICE:CANARY/$ID/$INCREMENTAL:user/release-keys"
+
+echo "==> Creating pif_beta.json ..."
 cat > pif_beta.json <<EOF
 {
   "BRAND": "google",
   "DEVICE": "$DEVICE",
   "FINGERPRINT": "$FINGERPRINT",
-  "ID": "$(echo "${FINGERPRINT}" | awk -F'[:/]' -v i="5" '{print $i}')",
+  "ID": "$ID",
   "MANUFACTURER": "Google",
   "MODEL": "$MODEL",
   "PRODUCT": "$PRODUCT",
@@ -54,6 +86,5 @@ cat > pif_beta.json <<EOF
 }
 EOF
 
-rm -f PIXEL_*_HTML PIXEL_ZIP_METADATA
-
-echo "Done! pif_beta.json created"
+cat pif_beta.json
+echo "Done!"
