@@ -15,8 +15,8 @@ wget -q -O "$TMP/versions.html" "https://developer.android.com/about/versions"
 wget -q -O "$TMP/latest.html" "$(grep -o 'https://developer.android.com/about/versions/.*[0-9]"' "$TMP/versions.html" | sort -ru | cut -d\" -f1 | head -n1)"
 wget -q -O "$TMP/fi.html" "https://developer.android.com$(grep -o 'href=".*download.*"' "$TMP/latest.html" | grep 'qpr' | cut -d\" -f2 | head -n1)"
 
-MODEL_LIST="$(grep -A1 'tr id=' "$TMP/fi.html" | grep 'td' | sed 's;.*<td>\(.*\)</td>.*;\1;')"
-PRODUCT_LIST="$(grep 'tr id=' "$TMP/fi.html" | sed 's;.*<tr id="\(.*\)">.*;\1_beta;')"
+MODEL_LIST="$(grep -A1 'tr id=' "$TMP/fi.html" | grep 'td' | sed 's;.*<td>\(.*\)</td>.*;\1;' || true)"
+PRODUCT_LIST="$(grep 'tr id=' "$TMP/fi.html" | sed 's;.*<tr id="\(.*\)">.*;\1_beta;' || true)"
 
 [ -z "$MODEL_LIST" ] && die "Failed to get device list"
 
@@ -51,20 +51,22 @@ API_KEY="$(grep -o '<body data-client-config=.*' "$TMP/flash.html" | cut -d\; -f
 wget -q -O "$TMP/station.json" --header="Referer: https://flash.android.com" \
   "https://content-flashstation-pa.googleapis.com/v1/builds?product=$PRODUCT&key=$API_KEY"
 
-tac "$TMP/station.json" | grep -m1 -A13 '"canary": true' > "$TMP/canary.json"
-ID="$(grep 'releaseCandidateName' "$TMP/canary.json" | cut -d\" -f4)"
-INCREMENTAL="$(grep 'buildId' "$TMP/canary.json" | cut -d\" -f4)"
+tac "$TMP/station.json" | grep -m1 -A13 '"canary": true' > "$TMP/canary.json" || true
+
+ID="$(grep 'releaseCandidateName' "$TMP/canary.json" | cut -d\" -f4 || true)"
+INCREMENTAL="$(grep 'buildId' "$TMP/canary.json" | cut -d\" -f4 || true)"
+
 [ -z "$ID" ] || [ -z "$INCREMENTAL" ] && die "Failed to extract build info from JSON"
 echo "Build: $ID / $INCREMENTAL"
 
 echo "==> Crawling Pixel Update Bulletins for security patch level ..."
-CANARY_ID="$(grep '"id"' "$TMP/canary.json" | sed -e 's;.*canary-\(.*\)".*;\1;' -e 's;^\(.\{4\}\);\1-;')"
+CANARY_ID="$(grep '"id"' "$TMP/canary.json" | sed -e 's;.*canary-\(.*\)".*;\1;' -e 's;^\(.\{4\}\);\1-;' || true)"
 [ -z "$CANARY_ID" ] && die "Failed to extract canary id"
 
-wget -q -O "$TMP/secbull.html" "https://source.android.com/docs/security/bulletin/pixel"
-SECURITY_PATCH="$(grep "<td>$CANARY_ID" "$TMP/secbull.html" | sed 's;.*<td>\(.*\)</td>;\1;')"
+wget -q -O "$TMP/secbull.html" "https://source.android.com/docs/security/bulletin/pixel" || true
+SECURITY_PATCH="$(grep "<td>$CANARY_ID" "$TMP/secbull.html" | sed 's;.*<td>\(.*\)</td>;\1;' || true)"
 if [ -z "$SECURITY_PATCH" ]; then
-  echo "Warning: exact patch not found, assuming ${CANARY_ID}-05"
+  echo "Warning: exact patch not found (or fetch failed), assuming ${CANARY_ID}-05"
   SECURITY_PATCH="${CANARY_ID}-05"
 fi
 echo "Security patch: $SECURITY_PATCH"
